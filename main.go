@@ -36,15 +36,6 @@ func main() {
 	var lines []string
 	durationTime = 50000
 
-	//日志
-	logs := logrus.New()
-	logs.SetFormatter(&logrus.TextFormatter{})
-	logsFile, err := createLogsFile()
-	if err != nil {
-		fmt.Printf("creating logs file ", logsFile.Name(), " went wrong :", err)
-		return
-	}
-	logs.SetOutput(logsFile)
 	defer logsFile.Close()
 
 	//采集过程
@@ -80,7 +71,7 @@ func main() {
 		time2 := time.Unix(time.Now().Local().Unix()-int64(time.Now().Local().Minute())%5*60, 300000000000)
 
 		//生成json文件
-		jsonfile, err := os.OpenFile("./raw/"+tom.id+"-#-"+"TOMCAT"+"-#-"+time1.Format("200601021504")+"-#-"+time2.Format("200601021504")+"-#-5.raw", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
+		jsonfile, err := os.OpenFile("../raw/"+tom.id+"-#-"+"TOMCAT"+"-#-"+time1.Format("200601021504")+"-#-"+time2.Format("200601021504")+"-#-5.raw", os.O_CREATE|os.O_APPEND|os.O_RDWR, 0666)
 		if err != nil {
 			logs.Error(err)
 			continue
@@ -100,12 +91,12 @@ func main() {
 			}
 		}
 		logs.Info("getting tomcat index successes")
-		jsontest ,err :=json.MarshalIndent(all , "" , " ")
+		/*jsontest, err := json.MarshalIndent(all, "", " ")
 		if err != nil {
 			fmt.Println("11")
 			continue
 		}
-		fmt.Println(string(jsontest))
+		fmt.Println(string(jsontest))*/
 
 		for key, value := range all {
 			if value1, ok := index2Mysql[key]; ok {
@@ -134,7 +125,7 @@ func main() {
 func createLogsFile() (logFile *os.File, err error) {
 
 	timeNow := time.Unix(time.Now().Local().Unix(), 0).Format("20060102")
-	logsFileName := "./logs/tomcatIndexLog-" + string(timeNow) + ".log"
+	logsFileName := "../../../logs/tomcatIndexLog-" + string(timeNow) + ".log"
 	_, err1 := os.Stat(logsFileName)
 	if err1 != nil {
 		if os.IsNotExist(err1) {
